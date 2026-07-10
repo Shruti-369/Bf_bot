@@ -1,86 +1,87 @@
 import express from "express";
 import cors from "cors";
+
 import { callLLM } from "./llm.js";
+import { loadMemory, saveMemory } from "./memory.js";
 
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
-const memory = {
-    firstMessages: [],
-    recentMessages: [],
-    summary: ""
-};
+const memory = loadMemory();
 
 app.post("/chat", async (req, res) => {
     try {
+
         const { message } = req.body;
 
         if (!message || typeof message !== "string") {
-            return res.status(400).json({ error: "message is required" });
-        }
-
-        if (memory.firstMessages.length < 10) {
-            memory.firstMessages.push({
-                role: "user",
-                content: message,
-            });
-        } else {
-            memory.recentMessages.push({
-                role: "user",
-                content: message,
+            return res.status(400).json({
+                error: "message is required",
             });
         }
 
-        // history should be an array of { role: "user"|"assistant", content: string }
-        const safeHistory = Array.isArray(history) ? history.slice(-20) : [];
-
+        // Build history for LLM
         const history = [
             ...memory.firstMessages,
             ...memory.recentMessages,
         ];
 
+        // Get AI reply
         const reply = await callLLM(message, history);
 
-        if (memory.firstMessages.length <= 10) {
-            memory.firstMessages.push({
-                role: "assistant",
-                content: reply,
-            });
-        } else {
-            memory.recentMessages.push({
-                role: "assistant",
-                content: reply,
-            });
-        }
+        // User Message
+        const userMessage = {
+            role: "user",
+            content: message,
+        };
 
-        if (memory.recentMessages.length > 20) {
-            memory.recentMessages.shift();
-        }
-
-        const aiMessage = {
+        // Assistant Message
+        const assistantMessage = {
             role: "assistant",
             content: reply,
         };
 
-        if (memory.firstMessages.length < 10) {
-            memory.firstMessages.push(aiMessage);
+        // Save User
+        if (memory.firstMessages.length < 20) {
+            memory.firstMessages.push(userMessage);
         } else {
-            memory.recentMessages.push(aiMessage);
+            memory.recentMessages.push(userMessage);
         }
 
-        if (memory.recentMessages.length > 20) {
+        // Save Assistant
+        if (memory.firstMessages.length < 20) {
+            memory.firstMessages.push(assistantMessage);
+        } else {
+            memory.recentMessages.push(assistantMessage);
+        }
+
+        // Keep only last 20 recent messages
+        while (memory.recentMessages.length > 20) {
             memory.recentMessages.shift();
         }
 
-        res.json({ reply });
+        // Save into memory.json
+        saveMemory(memory);
+
+        res.json({
+            reply,
+        });
+
     } catch (err) {
-        console.error("Chat error:", err.message);
-        res.status(500).json({ error: "Something went wrong. Try again." });
+
+        console.error(err);
+
+        res.status(500).json({
+            error: "Something went wrong",
+        });
+
     }
 });
 
 const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
     console.log(`Bf_bot server running on http://localhost:${PORT}`);
 });

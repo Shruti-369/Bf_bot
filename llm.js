@@ -26,10 +26,18 @@ Rules:
 
 export async function callLLM(userMessage, history = [], systemInstruction = BF_PERSONA, maxTokens = 500) {
     const messages = [
-        { role: "system", content: systemInstruction },
+        {
+            role: "system",
+            content: systemInstruction,
+        },
+
         ...history,
-        { role: "user", content: userMessage },
-    ]
+
+        {
+            role: "user",
+            content: userMessage,
+        },
+    ];
     const response = await client.chat.completions.create({
         model: "llama-3.3-70b-versatile",
         messages,
