@@ -1,46 +1,79 @@
-import { OpenAI } from "openai";
+import OpenAI from "openai";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 const client = new OpenAI({
+
     apiKey: process.env.GROQ_API_KEY,
-    baseURL: "https://api.groq.com/openai/v1",
+
+    baseURL: "https://api.groq.com/openai/v1"
+
 });
 
 export async function generateSummary(memory) {
 
     let conversation = "";
 
-    memory.recentTurns.forEach((turn) => {
+    memory.recentTurns.forEach(turn => {
 
-        conversation += `User: ${turn.user}\n`;
-        conversation += `Assistant: ${turn.assistant}\n\n`;
+        conversation +=
+
+            `User: ${turn.user}\n`;
+
+        conversation +=
+
+            `Assistant: ${turn.assistant}\n\n`;
 
     });
 
     const prompt = `
-Previous Summary:
+
+Previous Summary
 
 ${memory.summary}
 
---------------------------------
+--------------------------------------
 
-Summarize the new conversation.
+New Conversation
+
+${conversation}
+
+--------------------------------------
+
+Update the memory.
 
 Rules:
 
-- Keep important information only.
-- Remove greetings.
-- Remember promises.
-- Remember relationship details.
-- Remember user preferences.
-- Remember plans.
-- Maximum 200 words.
+1. Don't forget old memories.
 
-Conversation:
+2. Add new important information.
 
-${conversation}
+3. Ignore greetings.
+
+4. Ignore small talk.
+
+5. Remember:
+
+- Promises
+
+- Plans
+
+- Favorite Things
+
+- Nicknames
+
+- College
+
+- Friends
+
+- Relationship
+
+- Emotional Moments
+
+- Important Dates
+
+Return only the updated summary.
 `;
 
     const response = await client.chat.completions.create({
@@ -48,17 +81,30 @@ ${conversation}
         model: "llama-3.3-70b-versatile",
 
         messages: [
+
             {
+
                 role: "system",
-                content: "You are a memory summarizer."
+
+                content:
+
+                    "You summarize long conversations."
+
             },
+
             {
+
                 role: "user",
+
                 content: prompt
+
             }
+
         ],
 
-        max_tokens: 250
+        temperature: 0.2,
+
+        max_tokens: 300
 
     });
 
