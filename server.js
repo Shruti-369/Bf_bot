@@ -3,6 +3,7 @@ import cors from "cors";
 
 import { callLLM } from "./llm.js";
 import { loadMemory, saveMemory } from "./memory.js";
+import { updateUserProfile } from "./profile.js";
 import { generateSummary } from "./summary.js";
 
 const app = express();
@@ -10,6 +11,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Load memory once when server starts
 const memory = loadMemory();
 
 app.post("/chat", async (req, res) => {
@@ -21,50 +23,22 @@ app.post("/chat", async (req, res) => {
         if (!message || typeof message !== "string") {
 
             return res.status(400).json({
-                error: "message is required"
+                error: "Message is required"
             });
 
         }
 
-        //--------------------------------------------------
-        // Convert conversations into OpenAI history format
-        //--------------------------------------------------
+        // ==========================
+        // Generate AI Reply
+        // ==========================
 
-        const history = [];
+        const reply = await callLLM(message, memory);
 
-        for (const convo of memory.firstConversations) {
+        // ==========================
+        // Store Conversation Turn
+        // ==========================
 
-            history.push({
-                role: "user",
-                content: convo.user
-            });
-
-            history.push({
-                role: "assistant",
-                content: convo.assistant
-            });
-
-        }
-
-        for (const convo of memory.recentConversations) {
-
-            history.push({
-                role: "user",
-                content: convo.user
-            });
-
-            history.push({
-                role: "assistant",
-                content: convo.assistant
-            });
-
-        }
-
-        //--------------------------------------------------
-
-        const reply = await callLLM(message, history);
-
-        const conversation = {
+        const turn = {
 
             user: message,
 
@@ -72,25 +46,43 @@ app.post("/chat", async (req, res) => {
 
         };
 
-        //--------------------------------------------------
+        if (memory.firstTurns.length < 10) {
 
-        if (memory.firstConversations.length < 10) {
-
-            memory.firstConversations.push(conversation);
+            memory.firstTurns.push(turn);
 
         }
 
         else {
 
-            memory.recentConversations.push(conversation);
+            memory.recentTurns.push(turn);
 
         }
 
-        while (memory.recentConversations.length > 20) {
+        // Keep only latest 20 turns
 
-            memory.recentConversations.shift();
+        while (memory.recentTurns.length > 20) {
+
+            memory.recentTurns.shift();
 
         }
+
+        // ==========================
+        // Update User Profile
+        // ==========================
+
+        await updateUserProfile(
+
+            memory,
+
+            message,
+
+            reply
+
+        );
+
+        // ==========================
+        // Generate Summary
+        // ==========================
 
         if (memory.recentTurns.length >= 20) {
 
@@ -100,13 +92,19 @@ app.post("/chat", async (req, res) => {
 
         }
 
+        // ==========================
+        // Save Memory
+        // ==========================
+
         saveMemory(memory);
 
-        //--------------------------------------------------
+        // ==========================
 
         res.json({
 
-            reply
+            reply,
+
+            memory
 
         });
 
@@ -114,11 +112,11 @@ app.post("/chat", async (req, res) => {
 
     catch (err) {
 
-        console.log(err);
+        console.error(err);
 
         res.status(500).json({
 
-            error: "Something went wrong"
+            error: err.message
 
         });
 
@@ -130,6 +128,10 @@ const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
 
-    console.log(`Server running on ${PORT}`);
+    console.log(
+
+        `Server running on ${PORT}`
+
+    );
 
 });

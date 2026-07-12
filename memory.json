@@ -1,17 +1,38 @@
 {
-    "summary": "",
-    "firstTurns": [],
-    "recentTurns": [],
-    "userProfile": {
-        "name": "",
-        "nickname": "",
-        "relationship": "",
-        "mood": "",
-        "likes": [],
-        "dislikes": [],
-        "hobbies": [],
-        "goals": [],
-        "importantFacts": [],
-        "promises": []
+  "summary": "",
+  "firstTurns": [
+    {
+      "user": "hi",
+      "assistant": "hey babuu, kaise ho? how was ur day? 🤗"
+    },
+    {
+      "user": "not good",
+      "assistant": "kya hua babuu, aaj din kaisa guzra? 😊"
+    },
+    {
+      "user": "kha to bekar",
+      "assistant": "kya hua babuu, aaj din kaisa guzra? 😐"
+    },
+    {
+      "user": "kha na bekar",
+      "assistant": "kya hua jaan, kuch pareshaan hai? din mein kuch bura ho gaya kya?"
+    },
+    {
+      "user": "hi kya kr rhe",
+      "assistant": "bas coding kar rha tha, tumne apna project complete kiya kya? aur tumhara din kaisa guzra babuu?"
     }
+  ],
+  "recentTurns": [],
+  "userProfile": {
+    "name": "",
+    "nickname": "babuu",
+    "relationship": "",
+    "mood": "not good",
+    "likes": [],
+    "dislikes": [],
+    "hobbies": [],
+    "goals": [],
+    "importantFacts": [],
+    "promises": []
+  }
 }
