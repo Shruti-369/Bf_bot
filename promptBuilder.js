@@ -1,5 +1,6 @@
 import { BF_PERSONA } from "./persona.js";
 import { searchMemory } from "./memorySearch.js";
+import { personalities } from "./personalities.js";
 
 export function buildPrompt(memory, userMessage) {
 
