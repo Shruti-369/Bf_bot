@@ -4,6 +4,14 @@ import { personalities } from "./personalities.js";
 
 export function buildPrompt(memory, userMessage) {
 
+    const randomPersonality =
+
+        personalities[
+        Math.floor(
+            Math.random() * personalities.length
+        )
+        ];
+
     const messages = [];
 
     // =============================
