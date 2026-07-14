@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Bae — AI Chat</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link
+            href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+            rel="stylesheet">
+        <link rel="stylesheet" href="style.css">
+    </head>
+
+    <body>
+        <div class="ambient" id="ambient"></div>
+
+        <div class="app">
+
+            <!-- LEFT SIDEBAR -->
+            <aside class="side-left" id="sideLeft">
+                <div class="brand"><span class="dot"></span> chats</div>
+                <div class="search-box">🔍 <span>Search</span></div>
+                <div class="side-section-label">All chats</div>
+                <div class="chat-list" id="chatList">
+                    <!-- chat items injected by script.js, one per persona -->
+                </div>
+                <div class="side-section-label">Shared media</div>
+                <div class="chat-list"
+                    style="flex:0 0 auto; padding:0 18px 16px; color:var(--text-lo); font-size:12.5px;">
+                    No media yet
+                </div>
+            </aside>
+
+            <!-- CENTER CHAT -->
+            <main class="chat-center">
+                <div class="chat-header">
+                    <div class="icon-btn" style="display:none" id="leftToggle">☰</div>
+                    <div class="avatar-wrap" id="avatarWrap" title="Change photo">
+                        <div class="pulse-ring" id="pulseRing"></div>
+                        <div class="avatar" id="headerAvatar">B</div>
+                        <div class="dp-dots" id="dpDotsBtn">⋮</div>
+                    </div>
+                    <div class="hdr-info">
+                        <div class="hdr-name" id="hdrName">Bae</div>
+                        <div class="hdr-status" id="statusLine">online</div>
+                    </div>
+                    <div class="theme-switch" id="themeSwitch">
+                        <div class="theme-dot" data-theme="" style="background:linear-gradient(135deg,#e8a865,#c9584a)"
+                            title="Noir (dark)"></div>
+                        <div class="theme-dot" data-theme="rosewood"
+                            style="background:linear-gradient(135deg,#e35d82,#f2a154)" title="Rosewood (dark)"></div>
+                        <div class="theme-dot" data-theme="cream"
+                            style="background:linear-gradient(135deg,#e8935f,#d97a4a)" title="Cream (light)"></div>
+                        <div class="theme-dot" data-theme="sky"
+                            style="background:linear-gradient(135deg,#5fa8c9,#6fae8f)" title="Sky (light)"></div>
+                    </div>
+                    <div class="hdr-icons">
+                        <span title="Video call" id="videoCallBtn">📹</span>
+                        <span title="Voice call" id="voiceCallBtn">📞</span>
+                        <span title="Memory" id="rightToggle">🧠</span>
+                    </div>
+
+                    <!-- DP change popup -->
+                    <div class="dp-popup" id="dpPopup">
+                        <div class="dp-popup-title">Change photo</div>
+                        <div class="dp-grid" id="dpGrid"></div>
+                        <label class="dp-upload-label">
+                            Upload photo
+                            <input type="file" id="dpFileInput" accept="image/*" />
+                        </label>
+                    </div>
+                </div>
+
+                <div class="chat-scroll" id="chatScrollOuter">
+                    <div class="chat-scroll-inner" id="chatBody">
+                        <div class="day-chip">Today</div>
+                    </div>
+                </div>
+
+                <!-- Emoji picker -->
+                <div class="emoji-panel" id="emojiPanel"></div>
+
+                <div class="input-bar">
+                    <div class="input-bar-inner">
+                        <button class="icon-btn" title="Emoji" id="emojiBtn">😊</button>
+                        <input type="text" id="msgInput" placeholder="Message" autocomplete="off" />
+                        <button class="send-btn" id="sendBtn" aria-label="Send message">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </main>
+
+            <!-- RIGHT SIDEBAR — AI MEMORY -->
+            <aside class="side-right" id="sideRight">
+                <div class="mem-title"><span class="live-dot"></span> AI Memory</div>
+                <div class="mem-sub">updates as you chat</div>
+
+                <div class="mem-card">
+                    <div class="mem-label">Chatting with</div>
+                    <div class="mem-value" id="memPersonaName">Bae</div>
+                </div>
+
+                <div class="mem-card">
+                    <div class="mem-label">Nickname</div>
+                    <div class="mem-value" id="memNickname">Shrutu ❤️</div>
+                </div>
+
+                <div class="mem-card">
+                    <div class="mem-row">
+                        <div>
+                            <div class="mem-label">Mood</div>
+                            <div class="mem-value" id="memMood">Happy</div>
+                        </div>
+                        <div class="mem-mood" id="memMoodEmoji">😊</div>
+                    </div>
+                </div>
+
+                <div class="mem-card">
+                    <div class="mem-label">Promises</div>
+                    <div class="tag-list" id="memPromises">
+                        <span class="tag promise">Movie Sunday</span>
+                        <span class="tag promise">Chocolate</span>
+                    </div>
+                </div>
+
+                <div class="mem-card">
+                    <div class="mem-label">Recent topics</div>
+                    <div class="tag-list" id="memTopics">
+                        <span class="tag topic">College</span>
+                        <span class="tag topic">Gym</span>
+                        <span class="tag topic">Presentation</span>
+                    </div>
+                </div>
+            </aside>
+
+        </div>
+
+        <!-- CALL MODAL -->
+        <div class="call-overlay" id="callOverlay">
+            <div class="call-card">
+                <div class="call-avatar" id="callAvatar">B</div>
+                <div class="call-name" id="callName">Bae</div>
+                <div class="call-status" id="callStatus">Calling...</div>
+                <div class="call-actions">
+                    <button class="call-end-btn" id="callEndBtn" title="End call">✕</button>
+                </div>
+            </div>
+        </div>
+
+        <script src="script.js"></script>
+    </body>
+
+</html>
