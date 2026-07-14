@@ -1,6 +1,6 @@
-import { BF_PERSONA } from "./persona.js";
+import { BF_PERSONA } from "./persona/boyfriend.js";
 import { searchMemory } from "./memorySearch.js";
-import { personalities } from "./personalities.js";
+import { PERSONALITIES } from "./personalities.js";
 
 export function buildPrompt(memory, userMessage) {
 
@@ -22,9 +22,12 @@ export function buildPrompt(memory, userMessage) {
 
         role: "system",
 
-        content: PERSONALITIES[
-            memory.currentPersonality
-        ]
+        content:
+            BF_PERSONA +
+            "\n\n" +
+            PERSONALITIES[
+            memory.currentPersonality || "romantic"
+            ]
 
     });
 

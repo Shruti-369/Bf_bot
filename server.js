@@ -6,6 +6,7 @@ import { loadMemory, saveMemory } from "./memory.js";
 import { updateUserProfile } from "./profile.js";
 import { generateSummary } from "./summary.js";
 import { detectEmotion } from "./emotion.js";
+import { changePersona } from "./memory.js";
 
 const app = express();
 
@@ -14,6 +15,24 @@ app.use(express.json());
 
 // Load memory once when server starts
 const memory = loadMemory();
+
+app.post("/persona", (req, res) => {
+
+    const { persona } = req.body;
+
+    memory.currentPersona = persona;
+
+    saveMemory(memory);
+
+    res.json({
+
+        success: true,
+
+        currentPersona: persona
+
+    });
+
+});
 
 app.post("/chat", async (req, res) => {
 

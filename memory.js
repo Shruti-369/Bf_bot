@@ -24,6 +24,11 @@ const DEFAULT_MEMORY = {
     }
 };
 
+export function changePersona(memory, persona) {
+    memory.currentPersona = persona;
+    saveMemory(memory);
+}
+
 // Load Memory
 export function loadMemory() {
 
