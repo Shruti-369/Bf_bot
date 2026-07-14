@@ -50,6 +50,8 @@
   ],
   "currentPersonality": "Romantic",
   "personalityCount": 0,
+  "currentEmotion": "normal",
+  "emotionHistory": [],
   "userProfile": {
     "name": "",
     "nickname": "babuu",

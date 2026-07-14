@@ -5,6 +5,7 @@ import { callLLM } from "./llm.js";
 import { loadMemory, saveMemory } from "./memory.js";
 import { updateUserProfile } from "./profile.js";
 import { generateSummary } from "./summary.js";
+import { detectEmotion } from "./emotion.js";
 
 const app = express();
 
